@@ -111,7 +111,7 @@ class RecipeForm(FlaskForm):
                            choices=[
                                ('breakfast', ' Завтрак'),
                                ('lunch', ' Обед'),
-                               ('dinner', '🍽 Ужин'),
+                               ('dinner', ' Ужин'),
                                ('dessert', ' Десерт'),
                                ('salad', ' Салат'),
                                ('soup', ' Супы'),
@@ -254,7 +254,7 @@ def delete_recipe(recipe_id):
         return redirect(url_for('index'))
     db.session.delete(recipe)
     db.session.commit()
-    flash('🗑️ Рецепт успешно удален!', 'success')
+    flash(' Рецепт успешно удален!', 'success')
     return redirect(url_for('index'))
 
 
@@ -737,7 +737,7 @@ INDEX_TEMPLATE = '''{% extends "base.html" %}
                             <span class="category-badge">
                                 {% if recipe.category == 'breakfast' %} Завтрак
                                 {% elif recipe.category == 'lunch' %} Обед
-                                {% elif recipe.category == 'dinner' %}🍽 Ужин
+                                {% elif recipe.category == 'dinner' %} Ужин
                                 {% elif recipe.category == 'dessert' %} Десерт
                                 {% elif recipe.category == 'salad' %} Салат
                                 {% elif recipe.category == 'soup' %} Супы
@@ -976,7 +976,7 @@ PROFILE_TEMPLATE = '''{% extends "base.html" %}
                 {% set categories = {
                     'breakfast': {'emoji': '', 'name': 'Завтрак'},
                     'lunch': {'emoji': '', 'name': 'Обед'},
-                    'dinner': {'emoji': '🍽', 'name': 'Ужин'},
+                    'dinner': {'emoji': '', 'name': 'Ужин'},
                     'dessert': {'emoji': '', 'name': 'Десерт'},
                     'salad': {'emoji': '', 'name': 'Салат'},
                     'soup': {'emoji': '', 'name': 'Супы'},
@@ -1129,7 +1129,7 @@ RECIPE_DETAIL_TEMPLATE = '''{% extends "base.html" %}
                         <span class="category-badge position-relative" style="top: 0; right: 0;">
                             {% if recipe.category == 'breakfast' %} Завтрак
                             {% elif recipe.category == 'lunch' %} Обед
-                            {% elif recipe.category == 'dinner' %}🍽 Ужин
+                            {% elif recipe.category == 'dinner' %} Ужин
                             {% elif recipe.category == 'dessert' %} Десерт
                             {% elif recipe.category == 'salad' %} Салат
                             {% elif recipe.category == 'soup' %} Супы
