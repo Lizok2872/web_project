@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card fade-in">
+    <div class="card-body p-4">
+        <h2 class="mb-4">REST API Документация</h2>
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Базовый URL: <code>/api/v1</code>
+        </div>
+
+        <h4 class="mt-4">Рецепты</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Метод</th>
+                    <th>URL</th>
+                    <th>Описание</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>GET</td>
+                    <td><code>/recipes</code></td>
+                    <td>Получить список всех рецептов</td>
+                </tr>
+                <tr>
+                    <td>POST</td>
+                    <td><code>/recipes</code></td>
+                    <td>Создать новый рецепт</td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td><code>/recipes/&lt;id&gt;</code></td>
+                    <td>Получить рецепт по ID</td>
+                </tr>
+                <tr>
+                    <td>PUT</td>
+                    <td><code>/recipes/&lt;id&gt;</code></td>
+                    <td>Обновить рецепт</td>
+                </tr>
+                <tr>
+                    <td>DELETE</td>
+                    <td><code>/recipes/&lt;id&gt;</code></td>
+                    <td>Удалить рецепт</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4 class="mt-4">Пользователи</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Метод</th>
+                    <th>URL</th>
+                    <th>Описание</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>GET</td>
+                    <td><code>/users/&lt;id&gt;</code></td>
+                    <td>Получить информацию о пользователе</td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td><code>/users/&lt;id&gt;/recipes</code></td>
+                    <td>Получить рецепты пользователя</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4 class="mt-4">Пример POST запроса (создание рецепта)</h4>
+        <pre class="bg-dark text-light p-3 rounded">
+{
+    "title": "Борщ",
+    "description": "Классический украинский борщ",
+    "ingredients": "Свекла - 2 шт\nКапуста - 300г\nКартофель - 4 шт",
+    "instructions": "1. Нарезать овощи\n2. Варить бульон\n3. Добавить овощи",
+    "cooking_time": 90,
+    "category": "soup",
+    "user_id": 1
+}</pre>
+    </div>
+</div>
+{% endblock %}
