@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+{% if not current_user.is_authenticated %}
+<div class="hero-section">
+    <h1 class="hero-title">Моя Кулинарная Книга</h1>
+    <p class="hero-subtitle">Сохраняйте любимые рецепты, готовьте с удовольствием</p>
+    <div class="mt-5">
+        <a href="{{ url_for('register') }}" class="btn btn-primary-custom btn-lg me-3">
+            <i class="bi bi-person-plus"></i> Начать
+        </a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+            <i class="bi bi-box-arrow-in-right"></i> Войти
+        </a>
+    </div>
+</div>
+{% endif %}
+{% if current_user.is_authenticated %}
+<h2 class="mb-4">{% if search_query %}Результаты поиска: "{{ search_query }}"{% else %}Мои рецепты{% endif %}</h2>
+{% if recipes %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for recipe in recipes %}
+    <div class="col fade-in">
+        <div class="card recipe-card h-100">
+            <div class="card-body">
+                <span class="category-badge">
+                    {% if recipe.category == 'breakfast' %} Завтрак
+                    {% elif recipe.category == 'lunch' %} Обед
+                    {% elif recipe.category == 'dinner' %} Ужин
+                    {% elif recipe.category == 'dessert' %} Десерт
+                    {% elif recipe.category == 'salad' %} Салат
+                    {% elif recipe.category == 'soup' %} Супы
+                    {% elif recipe.category == 'baking' %} Выпечка
+                    {% elif recipe.category == 'drinks' %} Напитки
+                    {% elif recipe.category == 'appetizer' %} Закуски
+                    {% else %}🥫 Соусы{% endif %}
+                </span>
+                <h4 class="card-title mb-3">{{ recipe.title }}</h4>
+                <p class="card-text text-muted">{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}...{% endif %}</p>
+                <div class="d-flex align-items-center mb-3">
+                    <span class="time-badge me-2"><i class="bi bi-clock"></i> {{ recipe.cooking_time }} мин</span>
+                    <small class="text-muted"><i class="bi bi-calendar3"></i> {{ recipe.created_at.strftime('%d.%m.%Y') }}</small>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('view_recipe', recipe_id=recipe.id) }}" class="btn btn-primary-custom">Смотреть</a>
+                    <div>
+                        <a href="{{ url_for('edit_recipe', recipe_id=recipe.id) }}" class="btn btn-outline-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                        <form action="{{ url_for('delete_recipe', recipe_id=recipe.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Удалить рецепт?')"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="bi bi-journal-bookmark-fill"></i>
+    <h3>У вас пока нет рецептов</h3>
+    <p>Добавьте первый рецепт!</p>
+    <a href="{{ url_for('new_recipe') }}" class="btn btn-primary-custom">Добавить рецепт</a>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}
