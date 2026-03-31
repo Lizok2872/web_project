@@ -9,9 +9,10 @@ from models import db, User, Recipe
 from forms import RegistrationForm, LoginForm, RecipeForm
 from api import RecipeListResource, RecipeResource, UserResource, UserRecipesResource
 from login_manager import Login
-from app.route import Route
+from app.route import Route2
 from errorhandler import Errorhandler
 from login_required import Required
+from route import Route
 
 
 app = Flask(__name__)
