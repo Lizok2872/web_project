@@ -8,7 +8,11 @@ from flask_restful import Api
 from models import db, User, Recipe
 from forms import RegistrationForm, LoginForm, RecipeForm
 from api import RecipeListResource, RecipeResource, UserResource, UserRecipesResource
-from what import What
+from login_manager import Login
+from app.route import Route
+from errorhandler import Errorhandler
+from login_required import Required
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
