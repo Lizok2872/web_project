@@ -1,4 +1,4 @@
-class Route
+class Route2:
     @app.route('/recipe/<int:recipe_id>')
         def view_recipe(recipe_id):
             recipe = Recipe.query.get_or_404(recipe_id)
