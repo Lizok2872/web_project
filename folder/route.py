@@ -1,4 +1,4 @@
-class Route
+class Route:
     @app.route('/')
         def index():
             search_query = request.args.get('q', '')
