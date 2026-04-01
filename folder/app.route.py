@@ -39,7 +39,7 @@ class Route2:
                 return redirect(url_for('index'))
             db.session.delete(recipe)
             db.session.commit()
-            flash(' Рецепт успешно удален!', 'success')
+            flash('Рецепт успешно удален!', 'success')
             return redirect(url_for('index'))
         
         
