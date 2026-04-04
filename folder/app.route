@@ -90,3 +90,8 @@ def view_recipe(recipe_id):
 
     ingredients_list = recipe.ingredients.split('\n')
     return render_template('recipe_detail.html', recipe=recipe, ingredients=ingredients_list)
+
+
+@app.route('/api/docs')
+def api_docs():
+    return render_template('api_docs.html')
