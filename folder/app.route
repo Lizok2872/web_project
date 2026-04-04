@@ -78,3 +78,15 @@ def login():
                                    form=form, message='Неверный email или пароль')
 
     return render_template('login.html', title='Авторизация', form=form)
+
+
+@app.route('/recipe/<int:recipe_id>')
+def view_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+
+    if recipe.user_id != current_user.id:
+        flash('У вас нет доступа к этому рецепту', 'danger')
+        return redirect(url_for('index'))
+
+    ingredients_list = recipe.ingredients.split('\n')
+    return render_template('recipe_detail.html', recipe=recipe, ingredients=ingredients_list)
