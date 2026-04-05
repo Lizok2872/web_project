@@ -1,8 +1,13 @@
-class App_route:
+from flask import render_template, redirect, url_for, flash, request, make_response, session, jsonify
+from flask_login import login_user, logout_user, login_required, current_user
+from models import User, Recipe
+from forms import RegistrationForm, LoginForm, RecipeForm
+
+def app_route(app):
     @app.route('/')
     def index():
         search_query = request.args.get('q', '')
-    
+
         if current_user.is_authenticated:
             if search_query:
                 recipes = Recipe.query.filter(
@@ -13,10 +18,9 @@ class App_route:
                 recipes = Recipe.query.filter_by(user_id=current_user.id).order_by(Recipe.created_at.desc()).all()
         else:
             recipes = []
-    
+
         return render_template('index.html', recipes=recipes, search_query=search_query)
-    
-    
+
     @app.route('/search')
     def search():
         query = request.args.get('q', '')
@@ -30,42 +34,41 @@ class App_route:
         else:
             recipes = []
         return render_template('index.html', recipes=recipes, search_query=query)
-    
-    
+
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if current_user.is_authenticated:
             return redirect(url_for('index'))
-    
+
         form = RegistrationForm()
         if form.validate_on_submit():
             if form.password.data != form.confirm_password.data:
                 return render_template('register.html', title='Регистрация',
                                        form=form, message="Пароли не совпадают")
-    
+
             if User.query.filter_by(email=form.email.data).first():
                 return render_template('register.html', title='Регистрация',
                                        form=form, message="Такой пользователь уже есть")
-    
+
             user = User(
                 username=form.username.data,
                 email=form.email.data
             )
             user.set_password(form.password.data)
+            from models import db
             db.session.add(user)
             db.session.commit()
-    
+
             flash('Регистрация прошла успешно! Теперь вы можете войти.', 'success')
             return redirect(url_for('login'))
-    
+
         return render_template('register.html', title='Регистрация', form=form)
-    
-    
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if current_user.is_authenticated:
             return redirect(url_for('index'))
-    
+
         form = LoginForm()
         if form.validate_on_submit():
             user = User.query.filter_by(email=form.email.data).first()
@@ -77,22 +80,93 @@ class App_route:
             else:
                 return render_template('login.html', title='Авторизация',
                                        form=form, message='Неверный email или пароль')
-    
+
         return render_template('login.html', title='Авторизация', form=form)
-    
-    
+
+    @app.route('/logout')
+    @login_required
+    def logout():
+        logout_user()
+        flash('Вы вышли из системы. До свидания!', 'info')
+        return redirect(url_for('index'))
+
+    @app.route('/profile')
+    @login_required
+    def profile():
+        return render_template('profile.html')
+
+    @app.route('/recipe/new', methods=['GET', 'POST'])
+    @login_required
+    def new_recipe():
+        form = RecipeForm()
+        if form.validate_on_submit():
+            recipe = Recipe(
+                title=form.title.data,
+                description=form.description.data,
+                ingredients=form.ingredients.data,
+                instructions=form.instructions.data,
+                cooking_time=form.cooking_time.data,
+                category=form.category.data,
+                user_id=current_user.id
+            )
+            from models import db
+            db.session.add(recipe)
+            db.session.commit()
+            flash('Рецепт успешно добавлен!', 'success')
+            return redirect(url_for('index'))
+
+        return render_template('recipe_form.html', form=form, title='Добавить рецепт')
+
     @app.route('/recipe/<int:recipe_id>')
     def view_recipe(recipe_id):
         recipe = Recipe.query.get_or_404(recipe_id)
-    
+
         if recipe.user_id != current_user.id:
             flash('У вас нет доступа к этому рецепту', 'danger')
             return redirect(url_for('index'))
-    
+
         ingredients_list = recipe.ingredients.split('\n')
         return render_template('recipe_detail.html', recipe=recipe, ingredients=ingredients_list)
 
+    @app.route('/recipe/<int:recipe_id>/edit', methods=['GET', 'POST'])
+    @login_required
+    def edit_recipe(recipe_id):
+        recipe = Recipe.query.get_or_404(recipe_id)
 
-@app.route('/api/docs')
-def api_docs():
-    return render_template('api_docs.html')
+        if recipe.user_id != current_user.id:
+            flash('У вас нет прав для редактирования этого рецепта', 'danger')
+            return redirect(url_for('index'))
+
+        form = RecipeForm(obj=recipe)
+        if form.validate_on_submit():
+            recipe.title = form.title.data
+            recipe.description = form.description.data
+            recipe.ingredients = form.ingredients.data
+            recipe.instructions = form.instructions.data
+            recipe.cooking_time = form.cooking_time.data
+            recipe.category = form.category.data
+            from models import db
+            db.session.commit()
+            flash('Рецепт успешно обновлен!', 'success')
+            return redirect(url_for('view_recipe', recipe_id=recipe.id))
+
+        return render_template('recipe_form.html', form=form, title='Редактировать рецепт')
+
+    @app.route('/recipe/<int:recipe_id>/delete', methods=['POST'])
+    @login_required
+    def delete_recipe(recipe_id):
+        recipe = Recipe.query.get_or_404(recipe_id)
+
+        if recipe.user_id != current_user.id:
+            flash('У вас нет прав для удаления этого рецепта', 'danger')
+            return redirect(url_for('index'))
+
+        from models import db
+        db.session.delete(recipe)
+        db.session.commit()
+        flash('Рецепт успешно удален!', 'success')
+        return redirect(url_for('index'))
+
+    @app.route('/api/docs')
+    def api_docs():
+        return render_template('api_docs.html')
