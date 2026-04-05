@@ -6,6 +6,9 @@ from flask_restful import Api
 from models import db
 from api import RecipeListResource, RecipeResource, UserResource, UserRecipesResource
 from login_manager import setup_login_manager
+from app_route import app_route
+from errorhandler import errorhandler
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__,
@@ -31,9 +34,6 @@ api.add_resource(RecipeListResource, '/api/v1/recipes')
 api.add_resource(RecipeResource, '/api/v1/recipes/<int:recipe_id>')
 api.add_resource(UserResource, '/api/v1/users/<int:user_id>')
 api.add_resource(UserRecipesResource, '/api/v1/users/<int:user_id>/recipes')
-
-from app_route import app_route
-from errorhandler import errorhandler
 
 app_route(app)
 errorhandler(app)
